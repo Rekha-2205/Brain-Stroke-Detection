@@ -1,0 +1,44 @@
+[
+    {
+        "model": "accounts.customuser",
+        "pk": 1,
+        "fields": {
+            "username": "admin",
+            "email": "admin@example.com",
+            "first_name": "System",
+            "last_name": "Administrator",
+            "role": "admin",
+            "is_staff": true,
+            "is_superuser": true,
+            "is_active": true
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 2,
+        "fields": {
+            "username": "dr_smith",
+            "email": "smith@hospital.com",
+            "first_name": "John",
+            "last_name": "Smith",
+            "role": "physician",
+            "department": "Neurology",
+            "phone_number": "+91-9876543210",
+            "is_active": true
+        }
+    },
+    {
+        "model": "accounts.customuser",
+        "pk": 3,
+        "fields": {
+            "username": "radiologist_jane",
+            "email": "jane@hospital.com",
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "role": "radiologist",
+            "department": "Radiology",
+            "phone_number": "+91-9876543211",
+            "is_active": true
+        }
+    }
+]

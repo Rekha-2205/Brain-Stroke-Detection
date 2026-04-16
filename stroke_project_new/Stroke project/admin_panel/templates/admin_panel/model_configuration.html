@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Model Configuration - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card card-custom">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Model Configuration</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% load crispy_forms_tags %}
+                        
+                        <h6 class="text-muted mb-3">General Settings</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Configuration Name *</label>
+                            {{ form.config_name }}
+                        </div>
+                        
+                        <hr>
+                        <h6 class="text-muted mb-3">Genetic Algorithm Parameters</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Population Size</label>
+                                {{ form.population_size }}
+                                <small class="form-text text-muted">Recommended: 50-100</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Number of Generations</label>
+                                {{ form.num_generations }}
+                                <small class="form-text text-muted">Recommended: 50-150</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Mutation Rate</label>
+                                {{ form.mutation_rate }}
+                                <small class="form-text text-muted">Range: 0.01-0.2</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Crossover Rate</label>
+                                {{ form.crossover_rate }}
+                                <small class="form-text text-muted">Range: 0.6-0.9</small>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <h6 class="text-muted mb-3">BiLSTM Model Parameters</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">BiLSTM Units</label>
+                                {{ form.bilstm_units }}
+                                <small class="form-text text-muted">Common: 64, 128, 256</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dropout Rate</label>
+                                {{ form.dropout_rate }}
+                                <small class="form-text text-muted">Range: 0.2-0.5</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Learning Rate</label>
+                                {{ form.learning_rate }}
+                                <small class="form-text text-muted">Common: 0.001, 0.0001</small>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <h6 class="text-muted mb-3">Training Parameters</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Batch Size</label>
+                                {{ form.batch_size }}
+                                <small class="form-text text-muted">Common: 16, 32, 64</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Epochs</label>
+                                {{ form.epochs }}
+                                <small class="form-text text-muted">Recommended: 10-100</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-custom">
+                                <i class="fas fa-save me-2"></i>Save Configuration
+                            </button>
+                            <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-secondary btn-custom">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

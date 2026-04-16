@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload CT Scan{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-custom">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload CT Scan</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% load crispy_forms_tags %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Patient ID *</label>
+                            {{ form.patient_id }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Patient Name *</label>
+                            {{ form.patient_name }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Age *</label>
+                                {{ form.patient_age }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Gender *</label>
+                                {{ form.patient_gender }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">CT Scan Image *</label>
+                            {{ form.original_image }}
+                            <small class="form-text text-muted">
+                                Supported formats: JPG, PNG, DICOM. Max size: 10MB
+                            </small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-custom">
+                                <i class="fas fa-upload me-2"></i>Upload & Process
+                            </button>
+                            <a href="{% url 'detection:dashboard' %}" class="btn btn-secondary btn-custom">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

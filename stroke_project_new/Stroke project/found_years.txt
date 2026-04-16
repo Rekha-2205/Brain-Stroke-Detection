@@ -1,0 +1,7 @@
+Match in BATCH-3 (AI) INNOVATIONS IN STROKE IDENTIFICATION.docx at index 428:
+In conclusion, future enhancements will focus on improving accuracy, transparency, scalability, and real-world deployment. With continuous refinement and integration of advanced AI technologies, the proposed system has strong potential to become a comprehensive, reliable, and widely adopted solution for early stroke detection and prevention.
+9. REFERENCES
+[1] W. H. Organization, “Stroke, Cerebrovascular accident,” World Health Organization, 2023.
+[2] R. S. Karthik et al., “Deep learning approaches for stroke detection using medical imaging: A review,” IEEE Access, vol. 9, pp. 125345–125362, 2021.
+[3] A. Krizhevsky, I. Sutskever, and G. Hinton, “ImageNet classification with deep convolutional neural networks,” Advances in Neural Information Processing Systems, vol. 25, pp. 1097–1105, 2012.
+--------------------

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Stroke Detection System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-custom">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>My Profile</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% load crispy_forms_tags %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            {{ form.email }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Department</label>
+                            {{ form.department }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>Username:</strong> {{ user.username }}<br>
+                            <strong>Role:</strong> {{ user.get_role_display }}<br>
+                            <strong>Member Since:</strong> {{ user.date_joined|date:"M d, Y" }}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-custom">
+                                <i class="fas fa-save me-2"></i>Update Profile
+                            </button>
+                            <a href="{% url 'detection:dashboard' %}" class="btn btn-secondary btn-custom">
+                                Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Processing CT Scan{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-custom text-center">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <div class="spinner-border text-primary" style="width: 5rem; height: 5rem;" role="status">
+                            <span class="visually-hidden">Processing...</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-3">Processing CT Scan</h4>
+                    <p class="text-muted">Please wait while we analyze the image...</p>
+                    <div class="progress mt-4" style="height: 30px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 100%">
+                            Analyzing...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-redirect after processing
+    setTimeout(function() {
+        location.reload();
+    }, 3000);
+</script>
+{% endblock %}

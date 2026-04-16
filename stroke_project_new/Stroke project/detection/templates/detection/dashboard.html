@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Stroke Detection System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">Welcome, {{ user.first_name|default:user.username }}!</h2>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="d-flex align-items-center">
+                    <div class="icon bg-primary me-3" style="background: #2563eb;">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Total Scans</h6>
+                        <h3 class="mb-0">{{ total_scans }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="d-flex align-items-center">
+                    <div class="icon bg-success me-3" style="background: #10b981;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Recent Scans</h6>
+                        <h3 class="mb-0">{{ recent_scans|length }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="d-flex align-items-center">
+                    <div class="icon bg-info me-3" style="background: #3b82f6;">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Role</h6>
+                        <h5 class="mb-0">{{ user.get_role_display }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card card-custom">
+                <div class="card-body text-center p-5">
+                    <i class="fas fa-upload fa-3x text-primary mb-3"></i>
+                    <h5>Upload New CT Scan</h5>
+                    <p class="text-muted">Upload brain CT scan for stroke detection</p>
+                    <a href="{% url 'detection:upload' %}" class="btn btn-primary btn-custom">
+                        <i class="fas fa-upload me-2"></i>Upload Now
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card card-custom">
+                <div class="card-body text-center p-5">
+                    <i class="fas fa-history fa-3x text-success mb-3"></i>
+                    <h5>View Case History</h5>
+                    <p class="text-muted">Browse previous patient scan results</p>
+                    <a href="{% url 'detection:case_history' %}" class="btn btn-success btn-custom">
+                        <i class="fas fa-list me-2"></i>View History
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Scans -->
+    <div class="card card-custom">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Scans</h5>
+        </div>
+        <div class="card-body">
+            {% if recent_scans %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Patient Name</th>
+                            <th>Age</th>
+                            <th>Upload Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for scan in recent_scans %}
+                        <tr>
+                            <td>{{ scan.patient_id }}</td>
+                            <td>{{ scan.patient_name }}</td>
+                            <td>{{ scan.patient_age }}</td>
+                            <td>{{ scan.upload_date|date:"M d, Y H:i" }}</td>
+                            <td>
+                                {% if scan.strokedetectionresult %}
+                                <span class="badge bg-success">Processed</span>
+                                {% else %}
+                                <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if scan.strokedetectionresult %}
+                                <a href="{% url 'detection:result' scan.strokedetectionresult.pk %}" class="btn btn-sm btn-primary">
+                                    View Result
+                                </a>
+                                {% else %}
+                                <a href="{% url 'detection:process' scan.pk %}" class="btn btn-sm btn-warning">
+                                    Process
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No scans uploaded yet</p>
+                <a href="{% url 'detection:upload' %}" class="btn btn-primary btn-custom">
+                    <i class="fas fa-upload me-2"></i>Upload Your First Scan
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+    }
+</style>
+{% endblock %}

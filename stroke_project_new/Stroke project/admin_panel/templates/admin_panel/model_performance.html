@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Model Performance - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-chart-line me-2"></i>Model Performance</h2>
+    
+    {% if performances %}
+    <!-- display top‑level metrics for most recent training -->
+    <div class="row mb-4">
+        {% with performances.0 as latest %}
+        <div class="col-md-2">
+            <div class="stat-card text-center">
+                <h6 class="text-muted">Accuracy</h6>
+                <h3 class="text-primary">{{ latest.accuracy|floatformat:2 }}%</h3>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card text-center">
+                <h6 class="text-muted">Precision</h6>
+                <h3 class="text-success">{{ latest.precision|floatformat:2 }}%</h3>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card text-center">
+                <h6 class="text-muted">Recall</h6>
+                <h3 class="text-info">{{ latest.recall|floatformat:2 }}%</h3>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card text-center">
+                <h6 class="text-muted">F1-Score</h6>
+                <h3 class="text-warning">{{ latest.f1_score|floatformat:2 }}%</h3>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card text-center">
+                <h6 class="text-muted">AUC-ROC</h6>
+                <h3 class="text-danger">{{ latest.auc_score|floatformat:2 }}%</h3>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card text-center">
+                <h6 class="text-muted">Version</h6>
+                <h5>{{ latest.model_version }}</h5>
+            </div>
+        </div>
+        {% endwith %}
+    </div>
+    
+    <div class="card card-custom">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Training History</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="perfTable" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>Accuracy</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1-Score</th>
+                            <th>AUC-ROC</th>
+                            <th>Training Date</th>
+                            <th>Configuration</th>
+                            <th>Dataset</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for perf in performances %}
+                        <tr data-history='{{ perf.history_json|default:"{}"|escapejs }}' style="cursor:pointer;">
+                            <td><span class="badge bg-primary">{{ perf.model_version }}</span></td>
+                            <td>{{ perf.accuracy|floatformat:2 }}%</td>
+                            <td>{{ perf.precision|floatformat:2 }}%</td>
+                            <td>{{ perf.recall|floatformat:2 }}%</td>
+                            <td>{{ perf.f1_score|floatformat:2 }}%</td>
+                            <td>{{ perf.auc_score|floatformat:2 }}%</td>
+                            <td>{{ perf.training_date|date:"M d, Y H:i" }}</td>
+                            <td>
+                                {% if perf.configuration %}
+                                {{ perf.configuration.config_name }}
+                                {% else %}
+                                N/A
+                                {% endif %}
+                            </td>
+                            <td>{{ perf.dataset_name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="card card-custom">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-chart-bar fa-4x text-muted mb-3"></i>
+            <h5 class="text-muted">No training history available</h5>
+            <p>Train your first model to see performance metrics</p>
+            <a href="{% url 'admin_panel:model_training' %}" class="btn btn-primary btn-custom">
+                <i class="fas fa-graduation-cap me-2"></i>Start Training
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

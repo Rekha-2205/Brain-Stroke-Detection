@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block title %}Model Training - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-graduation-cap me-2"></i>Model Training</h2>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Training Form -->
+            <div class="card card-custom" id="trainingCard">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Train New Model</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="trainingForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Select Configuration *</label>
+                            <select name="configuration" class="form-control" id="configSelect" required>
+                                <option value="">-- Select Configuration --</option>
+                                {% for config in configurations %}
+                                <option value="{{ config.id }}">
+                                    {{ config.config_name }} 
+                                    (BiLSTM: {{ config.bilstm_units }} units, Epochs: {{ config.epochs }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Select Dataset *</label>
+                            <select name="dataset" class="form-control" id="datasetSelect" required>
+                                <option value="">-- Select Dataset --</option>
+                                {% for dataset in datasets %}
+                                <option value="{{ dataset.id }}">
+                                    {{ dataset.name }} ({{ dataset.total_images }} images)
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Important</h6>
+                            <ul class="mb-0">
+                                <li>Training typically takes 15 min - 1 hour depending on dataset size and configuration</li>
+                                <li>Do not close this browser window during training</li>
+                                <li>Real-time progress will be displayed below</li>
+                                <li>Previous model will be backed up automatically</li>
+                            </ul>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-custom w-100" id="startBtn">
+                            <i class="fas fa-play me-2"></i>Start Training
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Training Progress -->
+            <div class="card card-custom mt-4" id="progressCard" style="display: none;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-cog fa-spin me-2"></i>Training in Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Training Status</label>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 id="progressBar" role="progressbar" 
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" 
+                                 style="width: 0%;">
+                                <span id="progressText">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6>Current Task:</h6>
+                        <p id="statusMessage" class="mb-0">Starting training...</p>
+                    </div>
+                    
+                    <div class="card bg-dark text-light">
+                        <div class="card-body p-2">
+                            <pre id="trainingLog" style="font-size: 12px; max-height: 300px; overflow-y: auto; margin-bottom: 0;">
+Starting training session...</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Completion Message -->
+            <div class="card card-custom mt-4" id="completeCard" style="display: none;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Training Completed!</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-trophy me-2"></i>Model Training Successful!</h5>
+                        <div id="completionMessage"></div>
+                    </div>
+                    <a href="{% url 'admin_panel:model_performance' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-chart-line me-2"></i>View Performance Metrics
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Info Sidebar -->
+        <div class="col-md-4">
+            <div class="card card-custom">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">Training Instructions</h6>
+                </div>
+                <div class="card-body">
+                    <h6>Quick Steps:</h6>
+                    <ol class="small">
+                        <li>Go to <strong>Configuration</strong> and create a model configuration if you don't have one</li>
+                        <li>Go to <strong>Datasets</strong> and upload a dataset if you don't have one</li>
+                        <li>Return here and select the configuration and dataset</li>
+                        <li>Click <strong>"Start Training"</strong></li>
+                        <li>Wait for training to complete and view metrics in Performance</li>
+                    </ol>
+                    
+                    <hr>
+                    
+                    <h6>Expected Results:</h6>
+                    <ul class="small mb-0">
+                        <li>Accuracy: 85-97% based on quality of dataset</li>
+                        <li>Training duration: 15min - 1hour depending on dataset size and configuration </li>
+                        <li>Auto-saved to database</li>
+                        <li>Visible in Performance tab</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card card-custom mt-3">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0">Model Architecture</h6>
+                </div>
+                <div class="card-body small">
+                    <p class="mb-2"><strong>BiLSTM + CNN Hybrid</strong></p>
+                    <ul class="mb-0">
+                        <li>CNN: Feature extraction</li>
+                        <li>BiLSTM: Sequence analysis</li>
+                        <li>Dropout: Prevent overfitting</li>
+                        <li>Sigmoid: Binary classification</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const PROGRESS_CHECK_INTERVAL = 2000; // Check every 2 seconds
+let isTraining = false;
+let progressInterval = null;
+
+document.getElementById('trainingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const configSelect = document.getElementById('configSelect');
+    const datasetSelect = document.getElementById('datasetSelect');
+    
+    if (!configSelect.value || !datasetSelect.value) {
+        alert('Please select both configuration and dataset');
+        return;
+    }
+    
+    // Hide form, show progress
+    document.getElementById('trainingCard').style.display = 'none';
+    document.getElementById('progressCard').style.display = 'block';
+    document.getElementById('completeCard').style.display = 'none';
+    
+    isTraining = true;
+    
+    // Start progress monitoring immediately
+    progressInterval = setInterval(checkTrainingProgress, PROGRESS_CHECK_INTERVAL);
+    checkTrainingProgress(); // Check immediately
+    
+    // Submit the form
+    this.submit();
+});
+
+// Check training progress periodically
+function checkTrainingProgress() {
+    fetch('{% url "admin_panel:training_progress" %}')
+        .then(response => response.json())
+        .then(data => {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const statusMessage = document.getElementById('statusMessage');
+            const trainingLog = document.getElementById('trainingLog');
+            
+            // Update progress bar
+            progressBar.style.width = data.progress + '%';
+            progressText.textContent = data.progress + '%';
+            
+            // Update status message
+            statusMessage.textContent = data.message;
+            
+            // Add to log
+            trainingLog.textContent += '\n' + new Date().toLocaleTimeString() + ' - ' + data.message;
+            trainingLog.scrollTop = trainingLog.scrollHeight;
+            
+            // Check if training completed successfully
+            if (!data.is_training && data.progress === 100) {
+                completeTraining(data.message, data.metrics);
+            }
+        })
+        .catch(error => {
+            console.error('Error checking progress:', error);
+        });
+}
+
+function completeTraining(finalMessage, metrics) {
+    clearInterval(progressInterval);
+    isTraining = false;
+    
+    // Hide progress, show completion
+    document.getElementById('progressCard').style.display = 'none';
+    document.getElementById('completeCard').style.display = 'block';
+    
+    // build message using returned metrics if available
+    let content = '<p><strong>✅ Model trained successfully!</strong></p>';
+    if(metrics) {
+        content += `<p>Version: <strong>${metrics.model_version}</strong></p>`;
+        content += `<p>Accuracy: <strong>${metrics.accuracy.toFixed(2)}%</strong></p>`;
+        content += `<p>Precision: <strong>${metrics.precision.toFixed(2)}%</strong></p>`;
+        content += `<p>Recall: <strong>${metrics.recall.toFixed(2)}%</strong></p>`;
+        content += `<p>F1‑Score: <strong>${metrics.f1_score.toFixed(2)}%</strong></p>`;
+        content += `<p>AUC‑ROC: <strong>${metrics.auc_score.toFixed(2)}%</strong></p>`;
+    } else {
+        content += '<p>The model has been saved and is ready for use.</p>';
+    }
+    document.getElementById('completionMessage').innerHTML = content;
+}
+
+function showTrainingForm() {
+    document.getElementById('trainingCard').style.display = 'block';
+    document.getElementById('progressCard').style.display = 'none';
+    document.getElementById('completeCard').style.display = 'none';
+    isTraining = false;
+}
+
+// Auto-start progress checking if page loads while training
+window.addEventListener('load', function() {
+    {% if is_training %}
+        document.getElementById('trainingCard').style.display = 'none';
+        document.getElementById('progressCard').style.display = 'block';
+        document.getElementById('completeCard').style.display = 'none';
+        progressInterval = setInterval(checkTrainingProgress, PROGRESS_CHECK_INTERVAL);
+        checkTrainingProgress(); // Check immediately
+    {% endif %}
+});
+
+
+</script>
+
+<style>
+#trainingLog {
+    font-family: 'Courier New', monospace;
+    background-color: #1e1e1e;
+    color: #0f0;
+    border: 1px solid #333;
+    border-radius: 4px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detection Result{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card card-custom mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-stethoscope me-2"></i>Stroke Detection Result</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Patient Information -->
+                    <h6 class="text-muted mb-3">Patient Information</h6>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>Patient ID:</strong> {{ result.ct_scan.patient_id }}</p>
+                            <p><strong>Patient Name:</strong> {{ result.ct_scan.patient_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Age:</strong> {{ result.ct_scan.patient_age }} years</p>
+                            <p><strong>Gender:</strong> {{ result.ct_scan.patient_gender }}</p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Detection Result -->
+                    <h6 class="text-muted mb-3">Detection Result</h6>
+                    <div class="text-center mb-4">
+                        {% if result.prediction == 'stroke' %}
+                        <div class="alert alert-danger alert-custom">
+                            <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                            <h4>STROKE DETECTED</h4>
+                            <p class="mb-0">Immediate medical attention recommended</p>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-success alert-custom">
+                            <i class="fas fa-check-circle fa-3x mb-3"></i>
+                            <h4>NO STROKE DETECTED</h4>
+                            <p class="mb-0">No signs of stroke found in the scan</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Confidence Metrics -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="stat-card text-center">
+                                <h6 class="text-muted">Accuracy</h6>
+                                <h3>{{ result.confidence_score|floatformat:2 }}%</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card text-center">
+                                <h6 class="text-muted">Processing Time</h6>
+                                <h3>{{ result.processing_time|floatformat:2 }}s</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card text-center">
+                                <h6 class="text-muted">Model Version</h6>
+                                <h3>{{ result.model_version }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CT Scan Images -->
+                    <h6 class="text-muted mb-3">CT Scan Images</h6>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h6>Original Image</h6>
+                                    {% if result.ct_scan.original_image %}
+                                    <img src="{{ result.ct_scan.original_image.url }}" 
+                                         class="img-fluid rounded" 
+                                         alt="Original CT Scan"
+                                         style="max-height: 400px;">
+                                    {% else %}
+                                    <div class="alert alert-warning">No original image available</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h6>Preprocessed Image</h6>
+                                    {% if result.ct_scan.preprocessed_image %}
+                                        <img src="{{ result.ct_scan.preprocessed_image.url }}" 
+                                             class="img-fluid rounded" 
+                                             alt="Preprocessed CT Scan"
+                                             style="max-height: 400px;"
+                                             onerror="this.onerror=null; this.src='{% static 'images/no-image.png' %}'; this.alt='Preprocessing failed';">
+                                    {% else %}
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i>
+                                        <p class="mb-0">Preprocessed image not available</p>
+                                        <small>The image was processed but preview is unavailable</small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'reports:generate' result.pk %}" class="btn btn-success btn-custom">
+                            <i class="fas fa-file-pdf me-2"></i>Generate PDF Report
+                        </a>
+                        <a href="{% url 'detection:dashboard' %}" class="btn btn-secondary btn-custom">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+</style>
+{% endblock %}

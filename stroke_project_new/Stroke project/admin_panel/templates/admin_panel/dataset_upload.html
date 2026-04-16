@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Dataset - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-custom">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload Dataset</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% load crispy_forms_tags %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Dataset Name *</label>
+                            {{ form.name }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Description *</label>
+                            {{ form.description }}
+                        </div>
+                        
+                        <div class="mb-4" id="pathGroup">
+                            <label class="form-label">Dataset Path *</label>
+                            {{ form.file_path }}
+                            <button type="button" id="checkPathBtn" class="btn btn-sm btn-outline-secondary mt-2">
+                                <i class="fas fa-search me-1"></i>Check path
+                            </button>
+                            <div id="pathResult" class="mt-2"></div>
+                            <small class="form-text text-muted">
+                                Example: media/datasets/ct_scans<br>
+                                Folder should contain 'stroke/' and 'non_stroke/' subdirectories
+                            </small>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Dataset Structure</h6>
+                            <pre>dataset_folder/
+├── stroke/
+│   ├── image1.jpg
+│   ├── image2.jpg
+└── non_stroke/
+    ├── image1.jpg
+    ├── image2.jpg</pre>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-custom">
+                                <i class="fas fa-save me-2"></i>Save Dataset
+                            </button>
+                            <a href="{% url 'admin_panel:dataset_list' %}" class="btn btn-secondary btn-custom">
+                                Cancel
+                            </a>
+                        </div>
+                    <script>
+                        document.getElementById('checkPathBtn').addEventListener('click', function(){
+                            const input = document.querySelector('input[name="file_path"]');
+                            const val = input.value;
+                            const result = document.getElementById('pathResult');
+                            result.innerHTML = '<span class="text-muted">Checking…</span>';
+                            const csrf = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+                            fetch('{% url "admin_panel:dataset_validate_path" %}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'X-CSRFToken': csrf
+                                },
+                                body: 'file_path=' + encodeURIComponent(val)
+                            })
+                            .then(r=>r.json())
+                            .then(data=>{
+                                let html = '<ul class="list-unstyled mb-0">';
+                                html += '<li>Provided: <code>' + data.provided + '</code></li>';
+                                html += '<li>Resolved: <code>' + data.resolved + '</code></li>';
+                                html += '<li>Status: ' + (data.exists ? '<span class="text-success">exists</span>' : '<span class="text-danger">not found</span>') + '</li>';
+                                html += '</ul>';
+                                result.innerHTML = html;
+                            })
+                            .catch(err=>{
+                                result.innerHTML = '<span class="text-danger">error checking path</span>';
+                            });
+                        });
+                    </script>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

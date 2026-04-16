@@ -1,0 +1,1 @@
+import os; import sys; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stroke_detection.settings'); import django; django.setup(); from admin_panel.models import ModelPerformance; print(f"Total ModelPerformance records: {ModelPerformance.objects.count()}")
