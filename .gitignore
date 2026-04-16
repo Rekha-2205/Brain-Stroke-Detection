@@ -1,0 +1,34 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# Large Model Weights (>100MB)
+*.h5
+ml_models/trained_models/enhanced_bilstm_model.h5
+
+# Database
+db.sqlite3
+
+# Logs
+logs/*.log
+*.log
+
+# Media / Uploaded Data (optional to ignore)
+media/datasets/
+media/reports/
+# media/  # Uncomment to ignore all uploads
+
+# IDEs
+.vscode/
+.idea/
+*.swp
